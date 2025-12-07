@@ -1,0 +1,1264 @@
+/* ============================================
+   IMPORTS
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+
+/* ============================================
+   CSS VARIABLES - THEME SYSTEM
+   ============================================ */
+
+/* Minimal Mode Theme Variables */
+:root,
+.minimal-mode {
+  /* Core Color Palette */
+  --background: hsl(0, 0%, 98%);
+  --foreground: hsl(220, 20%, 15%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(220, 20%, 15%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(220, 20%, 15%);
+  --primary: hsl(220, 90%, 56%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(220, 14%, 96%);
+  --secondary-foreground: hsl(220, 20%, 25%);
+  --muted: hsl(220, 14%, 95%);
+  --muted-foreground: hsl(220, 10%, 50%);
+  --accent: hsl(220, 14%, 93%);
+  --accent-foreground: hsl(220, 20%, 15%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(220, 13%, 90%);
+  --input: hsl(220, 13%, 90%);
+  --ring: hsl(220, 90%, 56%);
+  
+  /* Layout & Spacing */
+  --radius: 0.75rem;
+  --minimal-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --minimal-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  
+  /* Task-Specific Colors */
+  --task-bg: hsl(0, 0%, 100%);
+  --task-border: hsl(220, 13%, 92%);
+  --task-completed-bg: hsl(220, 14%, 97%);
+  --checkbox-checked: hsl(142, 76%, 45%); /* Green for completed tasks */
+  
+  /* UI Component Colors */
+  --toggle-bg: hsl(220, 14%, 96%);
+  --toggle-text: hsl(220, 20%, 35%);
+  --progress-bg: hsl(220, 14%, 92%);
+  --progress-fill: hsl(220, 90%, 56%);
+  --points-bg: hsl(220, 14%, 97%);
+  --points-text: hsl(220, 20%, 30%);
+  --badge-bg: hsl(220, 14%, 97%);
+  --badge-locked-bg: hsl(220, 14%, 94%);
+  
+  /* Fun Mode Accent Colors (used in minimal mode for consistency) */
+  --fun-accent: hsl(185, 100%, 50%);
+  --fun-secondary: hsl(320, 85%, 60%);
+}
+
+/* Fun Mode Theme Variables */
+.fun-mode {
+  /* Core Color Palette - Dark Theme */
+  --background: hsl(250, 35%, 8%);
+  --foreground: hsl(0, 0%, 95%);
+  --card: hsl(250, 30%, 12%);
+  --card-foreground: hsl(0, 0%, 95%);
+  --popover: hsl(250, 30%, 12%);
+  --popover-foreground: hsl(0, 0%, 95%);
+  --primary: hsl(185, 100%, 50%);
+  --primary-foreground: hsl(250, 35%, 8%);
+  --secondary: hsl(280, 80%, 55%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --muted: hsl(250, 25%, 18%);
+  --muted-foreground: hsl(250, 10%, 65%);
+  --accent: hsl(320, 85%, 60%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 72%, 55%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(250, 25%, 20%);
+  --input: hsl(250, 25%, 18%);
+  --ring: hsl(185, 100%, 50%);
+  
+  /* Fun Mode Specific Colors */
+  --fun-accent: hsl(185, 100%, 50%);
+  --fun-secondary: hsl(320, 85%, 60%);
+  --fun-tertiary: hsl(50, 100%, 55%);
+  
+  /* Glow Effects */
+  --fun-glow: 0 0 20px hsla(185, 100%, 50%, 0.4);
+  --fun-glow-secondary: 0 0 20px hsla(320, 85%, 60%, 0.4);
+  
+  /* Task-Specific Colors */
+  --task-bg: hsl(250, 30%, 14%);
+  --task-border: hsl(250, 25%, 22%);
+  --task-completed-bg: hsl(250, 25%, 10%);
+  --checkbox-checked: hsl(185, 100%, 50%); /* Cyan for fun mode */
+  
+  /* UI Component Colors */
+  --toggle-bg: hsl(250, 30%, 16%);
+  --toggle-text: hsl(0, 0%, 90%);
+  --progress-bg: hsl(250, 25%, 18%);
+  --progress-fill: hsl(185, 100%, 50%);
+  --points-bg: hsl(250, 30%, 15%);
+  --points-text: hsl(185, 100%, 70%);
+  --badge-bg: hsl(250, 30%, 16%);
+  --badge-locked-bg: hsl(250, 25%, 12%);
+  
+  /* Gradient Backgrounds */
+  --gradient-primary: linear-gradient(135deg, hsl(185, 100%, 50%), hsl(320, 85%, 60%));
+  --gradient-secondary: linear-gradient(135deg, hsl(280, 80%, 55%), hsl(320, 85%, 60%));
+  --gradient-glow: radial-gradient(circle at center, hsla(185, 100%, 50%, 0.15), transparent 70%);
+}
+
+
+/* ============================================
+   BASE STYLES & RESET
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-out;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Fun Mode Typography */
+.fun-mode h1,
+.fun-mode h2,
+.fun-mode h3 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+
+/* ============================================
+   UTILITY CLASSES - LAYOUT
+   ============================================ */
+
+/* Display */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.grid {
+  display: grid;
+}
+
+/* Flexbox Alignment */
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+/* Position */
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+/* Z-Index */
+.z-10 {
+  z-index: 10;
+}
+
+.-z-10 {
+  z-index: -10;
+}
+
+/* Width */
+.w-full {
+  width: 100%;
+}
+
+.w-3 {
+  width: 0.75rem;
+}
+
+.w-3\.5 {
+  width: 0.875rem;
+}
+
+.w-4 {
+  width: 1rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.w-6 {
+  width: 1.5rem;
+}
+
+.w-8 {
+  width: 2rem;
+}
+
+.w-10 {
+  width: 2.5rem;
+}
+
+.w-16 {
+  width: 4rem;
+}
+
+/* Height */
+.h-3 {
+  height: 0.75rem;
+}
+
+.h-3\.5 {
+  height: 0.875rem;
+}
+
+.h-4 {
+  height: 1rem;
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
+.h-6 {
+  height: 1.5rem;
+}
+
+.h-8 {
+  height: 2rem;
+}
+
+.h-10 {
+  height: 2.5rem;
+}
+
+.h-16 {
+  height: 4rem;
+}
+
+.h-full {
+  height: 100%;
+}
+
+/* Min/Max Dimensions */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.min-h-0 {
+  min-height: 0;
+}
+
+.min-h-\[300px\] {
+  min-height: 300px;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+.max-w-6xl {
+  max-width: 72rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Flex Properties */
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+  
+  .md\:flex-row {
+    flex-direction: row;
+  }
+  
+  .md\:items-center {
+    align-items: center;
+  }
+  
+  .md\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+  
+  .lg\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+  
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Grid Layouts */
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Spacing Utilities */
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+
+/* ============================================
+   UTILITY CLASSES - SPACING
+   ============================================ */
+
+/* Padding */
+.p-1 {
+  padding: 0.25rem;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.p-3 {
+  padding: 0.75rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.py-16 {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.pb-1 {
+  padding-bottom: 0.25rem;
+}
+
+/* Margin */
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-12 {
+  margin-top: 3rem;
+}
+
+.ml-1\.5 {
+  margin-left: 0.375rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+/* Gap */
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+
+/* ============================================
+   UTILITY CLASSES - TYPOGRAPHY
+   ============================================ */
+
+/* Font Sizes */
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+/* Font Weight */
+.font-medium {
+  font-weight: 500;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+/* Text Alignment */
+.text-center {
+  text-align: center;
+}
+
+/* Text Decoration */
+.line-through {
+  text-decoration-line: line-through;
+}
+
+.underline {
+  text-decoration-line: underline;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ============================================
+   UTILITY CLASSES - COLORS & EFFECTS
+   ============================================ */
+
+/* Background Colors */
+.bg-transparent {
+  background-color: transparent;
+}
+
+.bg-secondary {
+  background-color: var(--secondary);
+}
+
+.bg-muted {
+  background-color: var(--muted);
+}
+
+.bg-secondary\/50 {
+  background-color: hsl(var(--secondary) / 0.5);
+}
+
+/* Text Colors */
+.text-primary {
+  color: var(--primary);
+}
+
+.text-muted-foreground {
+  color: var(--muted-foreground);
+}
+
+/* Opacity */
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-30 {
+  opacity: 0.3;
+}
+
+.opacity-60 {
+  opacity: 0.6;
+}
+
+.opacity-70 {
+  opacity: 0.7;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+/* Borders */
+.border {
+  border-width: 1px;
+}
+
+.border-2 {
+  border-width: 2px;
+}
+
+.border-b-2 {
+  border-bottom-width: 2px;
+}
+
+/* Border Radius */
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+/* Outline */
+.outline-none {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* Overflow */
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* Pointer Events */
+.pointer-events-none {
+  pointer-events: none;
+}
+
+
+/* ============================================
+   UTILITY CLASSES - TRANSITIONS & ANIMATIONS
+   ============================================ */
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+
+/* ============================================
+   COMPONENT STYLES - MAIN CONTAINER
+   ============================================ */
+
+.main-container {
+  background-color: var(--background);
+}
+
+.content-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--minimal-shadow);
+}
+
+.fun-mode .content-card {
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+
+/* ============================================
+   COMPONENT STYLES - HEADER & APP TITLE
+   ============================================ */
+
+.app-header {
+  color: var(--foreground);
+}
+
+.app-header-subtitle {
+  color: var(--muted-foreground);
+}
+
+.fun-mode .gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-gradient-overlay {
+  background: var(--gradient-glow);
+}
+
+
+/* ============================================
+   COMPONENT STYLES - MODE TOGGLE
+   ============================================ */
+
+.mode-toggle {
+  background-color: var(--toggle-bg);
+  color: var(--toggle-text);
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.fun-mode .mode-toggle {
+  box-shadow: var(--fun-glow);
+}
+
+.mode-toggle:hover {
+  transform: scale(1.05);
+}
+
+
+/* ============================================
+   COMPONENT STYLES - TASK INPUT
+   ============================================ */
+
+.task-input-container {
+  width: 100%;
+}
+
+.task-input-wrapper {
+  background-color: var(--card);
+  border: 1px solid var(--task-border);
+  box-shadow: var(--minimal-shadow);
+}
+
+.task-input-wrapper.focused {
+  border-color: var(--primary);
+}
+
+.task-input-wrapper:focus-within {
+  border-color: var(--primary);
+  transform: scale(1.01);
+}
+
+.fun-mode .task-input-wrapper.focused,
+.fun-mode .task-input-wrapper:focus-within {
+  box-shadow: var(--fun-glow);
+}
+
+.task-input-icon {
+  background-color: var(--secondary);
+  color: var(--primary);
+}
+
+.task-input {
+  color: var(--foreground);
+  background-color: transparent;
+}
+
+.task-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.task-input:focus {
+  outline: none;
+}
+
+.task-add-btn {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  cursor: pointer;
+}
+
+.fun-mode .task-add-btn {
+  background: var(--gradient-primary);
+  box-shadow: var(--fun-glow);
+}
+
+
+/* ============================================
+   COMPONENT STYLES - TASK FILTERS
+   ============================================ */
+
+.task-filters {
+  background-color: var(--secondary);
+}
+
+.filter-btn {
+  color: var(--muted-foreground);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  color: var(--primary-foreground);
+}
+
+.filter-active-bg {
+  background-color: var(--primary);
+}
+
+.fun-mode .filter-active-bg {
+  background: var(--gradient-primary);
+}
+
+
+/* ============================================
+   COMPONENT STYLES - TASK ITEMS
+   ============================================ */
+
+.task-item {
+  background-color: var(--task-bg);
+  border: 1px solid var(--task-border);
+  transition: all 0.2s ease;
+}
+
+.task-item.completed {
+  background-color: var(--task-completed-bg);
+}
+
+.task-item:hover {
+  transform: scale(1.01);
+}
+
+.fun-mode .task-item:hover {
+  transform: scale(1.02);
+}
+
+/* Task Checkbox */
+.task-checkbox {
+  border: 2px solid var(--border);
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.task-checkbox.checked {
+  background-color: var(--checkbox-checked);
+  border-color: var(--checkbox-checked);
+  color: white;
+}
+
+.fun-mode .task-checkbox.checked {
+  box-shadow: 0 0 10px var(--checkbox-checked);
+}
+
+.task-checkbox:hover {
+  transform: scale(1.1);
+}
+
+/* Task Title */
+.task-title {
+  color: var(--foreground);
+  /* Ensure truncation works properly */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Task Points (Fun Mode Only) */
+.task-points {
+  color: var(--fun-accent);
+}
+
+/* Task Edit Input */
+.task-edit-input {
+  color: var(--foreground);
+  border-bottom: 2px solid var(--primary);
+  background-color: transparent;
+}
+
+/* Task Action Buttons */
+.task-action-btn {
+  background-color: transparent;
+  color: var(--muted-foreground);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.task-action-btn:hover {
+  background-color: var(--secondary);
+  transform: scale(1.1);
+}
+
+.task-action-btn.delete:hover {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.task-action-btn.save {
+  color: var(--checkbox-checked);
+}
+
+/* Group Hover Effect */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+
+/* ============================================
+   COMPONENT STYLES - PROGRESS BAR
+   ============================================ */
+
+.progress-container {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: var(--card);
+}
+
+.progress-icon,
+.progress-label {
+  color: var(--muted-foreground);
+}
+
+.progress-value {
+  color: var(--foreground);
+}
+
+.progress-bar-bg {
+  height: 0.75rem;
+  border-radius: 9999px;
+  background-color: var(--progress-bg);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: var(--progress-fill);
+  transition: width 0.8s ease-out;
+  width: 0%;
+}
+
+.fun-mode .progress-bar-fill {
+  background: var(--gradient-primary);
+  box-shadow: var(--fun-glow);
+}
+
+.progress-percentage {
+  color: var(--primary);
+}
+
+.fun-mode .progress-percentage {
+  text-shadow: var(--fun-glow);
+}
+
+
+/* ============================================
+   COMPONENT STYLES - POINTS & STREAK
+   ============================================ */
+
+.points-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.points-card,
+.streak-card {
+  background-color: var(--points-bg);
+  transition: all 0.2s ease;
+}
+
+.points-card:hover,
+.streak-card:hover {
+  transform: scale(1.02);
+}
+
+.fun-mode .points-card:hover,
+.fun-mode .streak-card:hover {
+  transform: scale(1.05);
+}
+
+.points-icon {
+  color: var(--primary);
+}
+
+.fun-mode .points-icon {
+  filter: drop-shadow(var(--fun-glow));
+  animation: wiggle 0.5s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.points-label,
+.streak-label {
+  color: var(--muted-foreground);
+}
+
+.points-value,
+.streak-value {
+  color: var(--foreground);
+}
+
+.fun-mode .points-value {
+  color: var(--fun-accent);
+}
+
+.streak-icon {
+  color: rgb(249, 115, 22);
+  animation: bounce 0.6s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+
+/* ============================================
+   COMPONENT STYLES - BADGES
+   ============================================ */
+
+.badges-container {
+  width: 100%;
+}
+
+.badge-header-icon,
+.badge-header-text {
+  color: var(--muted-foreground);
+}
+
+.badge-item {
+  background-color: var(--badge-bg);
+  transition: all 0.2s ease;
+}
+
+.badge-item.locked {
+  background-color: var(--badge-locked-bg);
+  opacity: 0.6;
+}
+
+.badge-name {
+  color: var(--muted-foreground);
+}
+
+.badge-item.unlocked .badge-name {
+  color: var(--foreground);
+}
+
+.badge-item:hover {
+  transform: scale(1.05);
+}
+
+.fun-mode .badge-item:hover {
+  transform: scale(1.1);
+}
+
+
+/* ============================================
+   COMPONENT STYLES - STATS PANEL
+   ============================================ */
+
+.stats-panel {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+}
+
+
+/* ============================================
+   COMPONENT STYLES - EMPTY STATE
+   ============================================ */
+
+.empty-state {
+  color: var(--muted-foreground);
+}
+
+.fun-mode .empty-icon-container {
+  animation: float 2s ease-in-out infinite;
+}
+
+
+/* ============================================
+   GRADIENT UTILITIES
+   ============================================ */
+
+.bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.from-fun-accent\/20 {
+  --tw-gradient-from: hsla(185, 100%, 50%, 0.2);
+  --tw-gradient-to: hsla(185, 100%, 50%, 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-fun-secondary\/20 {
+  --tw-gradient-to: hsla(320, 85%, 60%, 0.2);
+}
+
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.from-fun-accent\/10 {
+  --tw-gradient-from: hsla(185, 100%, 50%, 0.1);
+  --tw-gradient-to: hsla(185, 100%, 50%, 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-fun-secondary\/10 {
+  --tw-gradient-to: hsla(320, 85%, 60%, 0.1);
+}
+
+.from-fun-accent\/5 {
+  --tw-gradient-from: hsla(185, 100%, 50%, 0.05);
+  --tw-gradient-to: hsla(185, 100%, 50%, 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-fun-secondary\/5 {
+  --tw-gradient-to: hsla(320, 85%, 60%, 0.05);
+}
+
+.from-fun-accent\/20\.bg-gradient-to-t {
+  --tw-gradient-from: hsla(185, 100%, 50%, 0.2);
+  --tw-gradient-to: hsla(185, 100%, 50%, 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.bg-gradient-to-t {
+  background-image: linear-gradient(to top, var(--tw-gradient-stops));
+}
+
+.to-transparent {
+  --tw-gradient-to: transparent;
+}
+
+
+/* ============================================
+   ANIMATIONS - KEYFRAMES
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+
+/* ============================================
+   ANIMATIONS - APPLIED
+   ============================================ */
+
+/* Fun Mode Icon Animations */
+.fun-mode .app-icon:hover {
+  animation: rotate 0.5s ease-in-out;
+}
+
+.fun-mode .points-icon {
+  animation: wiggle 0.5s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.fun-mode .streak-icon {
+  animation: bounce 0.6s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+/* Empty State Animation */
+.fun-mode .empty-icon-container {
+  animation: float 2s ease-in-out infinite;
+}
+
+
+/* ============================================
+   HOVER STATES & INTERACTIONS
+   ============================================ */
+
+.hover\:text-primary\/90:hover {
+  color: hsl(var(--primary) / 0.9);
+}

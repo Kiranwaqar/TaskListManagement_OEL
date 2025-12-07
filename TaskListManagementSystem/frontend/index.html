@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="main-container min-h-screen transition-all duration-300">
+    <div class="bg-gradient-overlay fixed inset-0 pointer-events-none" style="display: none;"></div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl relative">
+      <header class="header flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div class="flex items-center gap-3">
+          <div class="app-icon p-3 rounded-2xl bg-secondary">
+            <svg class="icon w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+          </div>
+          
+          <div>
+            <h1 class="app-header text-2xl md:text-3xl font-bold">Task Manager</h1>
+            <p class="app-header-subtitle text-sm">Organize your day</p>
+          </div>
+        </div>
+
+        <button class="mode-toggle relative flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300" id="modeToggle">
+          <svg class="mode-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+          <span class="text-sm">Minimal Mode</span>
+        </button>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-4">
+          <div class="task-input-wrapper-container">
+            <form class="task-input-container" id="taskForm">
+              <div class="task-input-wrapper relative flex items-center gap-3 p-2 rounded-2xl transition-all">
+                <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl task-input-icon">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  id="taskInput"
+                  placeholder="Add a new task..."
+                  class="task-input flex-1 bg-transparent outline-none text-base"
+                />
+                <button type="submit" class="task-add-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium" id="addBtn" style="display: none;">
+                  <span>Add</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="task-filters flex gap-2 p-1 rounded-xl" id="taskFilters">
+            <button class="filter-btn relative px-4 py-2 rounded-lg text-sm font-medium transition-all active" data-filter="all">
+              <span class="relative z-10">All <span class="ml-1.5 text-xs opacity-70">(0)</span></span>
+            </button>
+            <button class="filter-btn relative px-4 py-2 rounded-lg text-sm font-medium transition-all" data-filter="active">
+              <span class="relative z-10">Active <span class="ml-1.5 text-xs opacity-70">(0)</span></span>
+            </button>
+            <button class="filter-btn relative px-4 py-2 rounded-lg text-sm font-medium transition-all" data-filter="completed">
+              <span class="relative z-10">Completed <span class="ml-1.5 text-xs opacity-70">(0)</span></span>
+            </button>
+          </div>
+
+          <div class="content-card rounded-2xl p-4 min-h-[300px]" id="taskListContainer">
+            <div class="space-y-3" id="taskList">
+              <!-- Tasks will be inserted here -->
+            </div>
+            <div class="empty-state flex flex-col items-center justify-center py-16" id="emptyState" style="display: none;">
+              <div class="empty-icon-container mb-4 opacity-30">
+                <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <p class="text-lg font-medium" id="emptyTitle">No tasks yet</p>
+              <p class="text-sm opacity-70" id="emptySubtitle">Add your first task to get started!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="stats-panel rounded-2xl" id="progressPanel">
+            <div class="progress-container">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 progress-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                  </svg>
+                  <span class="text-sm font-medium progress-label">Progress</span>
+                </div>
+                <span class="text-sm font-bold progress-value" id="progressText">0/0 tasks</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar" style="width: 0%;"></div>
+              </div>
+              <div class="progress-percentage-container mt-2 text-center" id="progressPercentage" style="display: none;">
+                <span class="text-2xl font-bold progress-percentage" id="progressPercent">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-panel rounded-2xl p-4" id="pointsPanel">
+            <div class="points-container flex items-center gap-4">
+              <div class="points-card flex items-center gap-2 px-4 py-2 rounded-xl">
+                <svg class="w-5 h-5 points-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <div class="flex flex-col">
+                  <span class="text-xs points-label">Points</span>
+                  <span class="text-lg font-bold points-value" id="pointsValue">0</span>
+                </div>
+              </div>
+              <div class="streak-card flex items-center gap-2 px-4 py-2 rounded-xl">
+                <svg class="w-5 h-5 streak-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+                <div class="flex flex-col">
+                  <span class="text-xs streak-label">Streak</span>
+                  <span class="text-lg font-bold streak-value" id="streakValue">2 🔥</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-panel rounded-2xl p-4" id="badgesPanel">
+            <div class="badges-container">
+              <div class="flex items-center gap-2 mb-3">
+                <svg class="w-4 h-4 badge-header-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                <span class="text-sm font-medium badge-header-text" id="badgesHeader">Badges (0/4)</span>
+              </div>
+              <div class="badges-grid grid grid-cols-4 gap-2" id="badgesGrid">
+                <!-- Badges will be inserted here -->
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-panel rounded-2xl p-4" id="quickStatsPanel">
+            <h3 class="text-sm font-medium text-muted-foreground mb-3">Quick Stats</h3>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="text-center p-3 rounded-xl bg-secondary/50">
+                <p class="text-2xl font-bold" id="totalTasks">0</p>
+                <p class="text-xs text-muted-foreground">Total</p>
+              </div>
+              <div class="text-center p-3 rounded-xl bg-secondary/50">
+                <p class="text-2xl font-bold" id="completedTasks">0</p>
+                <p class="text-xs text-muted-foreground">Done</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="mt-12 text-center text-sm text-muted-foreground" id="footer">
+        <p>Stay organized, stay productive</p>
+      </footer>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
