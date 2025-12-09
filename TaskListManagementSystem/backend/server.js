@@ -8,6 +8,7 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./db");
 const taskRoutes = require("./routes/tasks");
+const statsRoutes = require("./routes/stats");
 
 // Initialize Express app
 const app = express();
@@ -48,6 +49,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // Routes
 app.use("/api/tasks", taskRoutes);
+app.use("/api/stats", statsRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -66,6 +68,7 @@ app.get("/", (req, res) => {
     endpoints: {
       health: "/api/health",
       tasks: "/api/tasks",
+      stats: "/api/stats",
     },
   });
 });

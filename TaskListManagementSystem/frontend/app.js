@@ -13,40 +13,17 @@ class TaskManager {
     // Initialize with empty tasks array - will be loaded from backend
     this.tasks = [];
 
-    // Initialize badges that users can unlock
-    // Each badge has: id, name, description, icon, and unlock status
-    this.badges = [
-      {
-        id: "first-task",
-        name: "First Steps",
-        description: "Complete your first task",
-        icon: "🎯",
-        unlocked: true,
-        unlockedAt: new Date("2024-01-14"),
-      },
-      {
-        id: "streak-3",
-        name: "On Fire",
-        description: "Complete tasks 3 days in a row",
-        icon: "🔥",
-        unlocked: true,
-        unlockedAt: new Date("2024-01-16"),
-      },
-      {
-        id: "points-50",
-        name: "Point Collector",
-        description: "Earn 50 points",
-        icon: "⭐",
-        unlocked: false,
-      },
-      {
-        id: "tasks-10",
-        name: "Task Master",
-        description: "Complete 10 tasks",
-        icon: "👑",
-        unlocked: false,
-      },
-    ];
+    // Initialize badges - will be loaded from backend
+    this.badges = [];
+
+    // User stats - will be loaded from backend
+    this.stats = {
+      totalPoints: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      tasksCompleted: 0,
+      totalTasks: 0,
+    };
 
     // Current filter: 'all', 'active', or 'completed'
     this.filter = "all";
@@ -109,6 +86,105 @@ class TaskManager {
       this.tasks = [];
       this.notify();
       return [];
+    }
+  }
+
+  /**
+   * Load user statistics (badges, streaks, points) from the backend API
+   */
+  async loadStats() {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/stats`);
+      if (!response.ok) {
+        throw new Error(`Failed to load stats: ${response.statusText}`);
+      }
+      const data = await response.json();
+      if (data.success) {
+        const statsData = data.data;
+        this.badges = statsData.badges || [];
+        this.stats = {
+          totalPoints: statsData.totalPoints || 0,
+          currentStreak: statsData.currentStreak || 0,
+          longestStreak: statsData.longestStreak || 0,
+          tasksCompleted: statsData.tasksCompleted || 0,
+          totalTasks: statsData.totalTasks || 0,
+        };
+        this.notify();
+        return { badges: this.badges, stats: this.stats };
+      } else {
+        throw new Error(data.error || "Failed to load stats");
+      }
+    } catch (error) {
+      console.error("Error loading stats:", error);
+      // Fallback to default badges if API fails
+      this.badges = [
+        {
+          id: "first-task",
+          name: "First Steps",
+          description: "Complete your first task",
+          icon: "🎯",
+          unlocked: false,
+        },
+        {
+          id: "streak-3",
+          name: "On Fire",
+          description: "Complete tasks 3 days in a row",
+          icon: "🔥",
+          unlocked: false,
+        },
+        {
+          id: "points-50",
+          name: "Point Collector",
+          description: "Earn 50 points",
+          icon: "⭐",
+          unlocked: false,
+        },
+        {
+          id: "tasks-10",
+          name: "Task Master",
+          description: "Complete 10 tasks",
+          icon: "👑",
+          unlocked: false,
+        },
+      ];
+      this.notify();
+      return { badges: this.badges, stats: this.stats };
+    }
+  }
+
+  /**
+   * Save user statistics to the backend API
+   */
+  async saveStats() {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/stats`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          badges: this.badges,
+          totalPoints: this.stats.totalPoints,
+          currentStreak: this.stats.currentStreak,
+          tasksCompleted: this.stats.tasksCompleted,
+          totalTasks: this.stats.totalTasks,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save stats");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        return data.data;
+      } else {
+        throw new Error(data.error || "Failed to save stats");
+      }
+    } catch (error) {
+      console.error("Error saving stats:", error);
+      throw error;
     }
   }
 
@@ -285,7 +361,7 @@ class TaskManager {
 
         // Check for badge unlocks only when completing a task (not uncompleting)
         if (!wasCompleted) {
-          this.checkBadgeUnlocks();
+          await this.checkBadgeUnlocks();
         }
 
         this.notify(); // Tell UI to update
@@ -299,7 +375,7 @@ class TaskManager {
     }
   }
 
-  checkBadgeUnlocks() {
+  async checkBadgeUnlocks() {
     const completedTasks = this.tasks.filter((t) => t.completed);
     const completedCount = completedTasks.length;
     const totalPoints = completedTasks.reduce(
@@ -307,60 +383,69 @@ class TaskManager {
       0
     );
 
+    // Update stats
+    this.stats.tasksCompleted = completedCount;
+    this.stats.totalTasks = this.tasks.length;
+    this.stats.totalPoints = totalPoints;
+
+    // Calculate current streak
+    const completionDates = completedTasks
+      .filter((t) => t.completedAt)
+      .map((t) => {
+        const date = new Date(t.completedAt);
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      })
+      .sort((a, b) => b.getTime() - a.getTime()); // Sort descending (newest first)
+
+    // Remove duplicates
+    const uniqueDates = [];
+    completionDates.forEach((date) => {
+      const dateStr = date.toDateString();
+      if (!uniqueDates.find((d) => d.toDateString() === dateStr)) {
+        uniqueDates.push(date);
+      }
+    });
+
+    // Calculate streak (consecutive days from today backwards)
+    let currentStreak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < uniqueDates.length; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() - i);
+      checkDate.setHours(0, 0, 0, 0);
+
+      if (uniqueDates.some((d) => d.getTime() === checkDate.getTime())) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    this.stats.currentStreak = currentStreak;
+    if (currentStreak > this.stats.longestStreak) {
+      this.stats.longestStreak = currentStreak;
+    }
+
+    let badgesUpdated = false;
+
     // Check for first task completion
     if (completedCount === 1) {
       const firstTaskBadge = this.badges.find((b) => b.id === "first-task");
       if (firstTaskBadge && !firstTaskBadge.unlocked) {
         firstTaskBadge.unlocked = true;
         firstTaskBadge.unlockedAt = new Date();
+        badgesUpdated = true;
       }
     }
 
     // Check for streak badge (3 days in a row)
     const streakBadge = this.badges.find((b) => b.id === "streak-3");
-    if (streakBadge && !streakBadge.unlocked) {
-      // Get all completion dates and sort them
-      const completionDates = completedTasks
-        .filter((t) => t.completedAt)
-        .map((t) => {
-          const date = new Date(t.completedAt);
-          // Normalize to midnight for date comparison
-          return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-        })
-        .sort((a, b) => a.getTime() - b.getTime());
-
-      // Remove duplicates (multiple tasks completed on same day)
-      const uniqueDates = [];
-      completionDates.forEach((date) => {
-        const dateStr = date.toDateString();
-        if (!uniqueDates.find((d) => d.toDateString() === dateStr)) {
-          uniqueDates.push(date);
-        }
-      });
-
-      // Check for 3 consecutive days
-      if (uniqueDates.length >= 3) {
-        for (let i = 0; i <= uniqueDates.length - 3; i++) {
-          const day1 = uniqueDates[i];
-          const day2 = uniqueDates[i + 1];
-          const day3 = uniqueDates[i + 2];
-
-          // Calculate difference in days
-          const diff1 = Math.floor(
-            (day2.getTime() - day1.getTime()) / (1000 * 60 * 60 * 24)
-          );
-          const diff2 = Math.floor(
-            (day3.getTime() - day2.getTime()) / (1000 * 60 * 60 * 24)
-          );
-
-          // Check if they are consecutive (difference of 1 day)
-          if (diff1 === 1 && diff2 === 1) {
-            streakBadge.unlocked = true;
-            streakBadge.unlockedAt = new Date();
-            break;
-          }
-        }
-      }
+    if (streakBadge && !streakBadge.unlocked && currentStreak >= 3) {
+      streakBadge.unlocked = true;
+      streakBadge.unlockedAt = new Date();
+      badgesUpdated = true;
     }
 
     // Check for points badge
@@ -368,6 +453,7 @@ class TaskManager {
     if (pointsBadge && !pointsBadge.unlocked && totalPoints >= 50) {
       pointsBadge.unlocked = true;
       pointsBadge.unlockedAt = new Date();
+      badgesUpdated = true;
     }
 
     // Check for tasks completion badge
@@ -375,6 +461,16 @@ class TaskManager {
     if (tasksBadge && !tasksBadge.unlocked && completedCount >= 10) {
       tasksBadge.unlocked = true;
       tasksBadge.unlockedAt = new Date();
+      badgesUpdated = true;
+    }
+
+    // Save to backend if badges or stats were updated
+    if (badgesUpdated || completedCount > 0) {
+      try {
+        await this.saveStats();
+      } catch (error) {
+        console.error("Error saving stats:", error);
+      }
     }
   }
 
@@ -403,11 +499,10 @@ class TaskManager {
 
   getStats() {
     return {
-      totalPoints: this.tasks
-        .filter((t) => t.completed)
-        .reduce((sum, t) => sum + t.points, 0),
-      tasksCompleted: this.tasks.filter((t) => t.completed).length,
-      currentStreak: 2,
+      totalPoints: this.stats.totalPoints,
+      tasksCompleted: this.stats.tasksCompleted,
+      currentStreak: this.stats.currentStreak,
+      longestStreak: this.stats.longestStreak,
       badges: this.badges,
     };
   }
@@ -527,18 +622,23 @@ class UIManager {
       void progressBar.offsetHeight;
     }
 
-    // Load tasks from backend
+    // Load stats and tasks from backend
     try {
+      // Load stats first (badges, streaks, points)
+      await this.taskManager.loadStats();
+
+      // Load tasks from backend
       await this.taskManager.loadTasks();
-      // Check for badges that should already be unlocked based on loaded tasks
-      this.taskManager.checkBadgeUnlocks();
+
+      // Recalculate and save badges/stats based on loaded tasks
+      await this.taskManager.checkBadgeUnlocks();
     } catch (error) {
-      console.error("Failed to load tasks:", error);
+      console.error("Failed to load data:", error);
       // Show error message to user
       const taskList = document.getElementById("taskList");
       if (taskList) {
         taskList.innerHTML =
-          '<div class="text-center p-8 text-red-500">Failed to load tasks. Please check if the backend server is running.</div>';
+          '<div class="text-center p-8 text-red-500">Failed to load data. Please check if the backend server is running.</div>';
       }
     }
 
