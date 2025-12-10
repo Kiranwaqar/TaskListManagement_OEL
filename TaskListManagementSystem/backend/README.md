@@ -41,7 +41,7 @@ A Node.js + Express backend API for the Task Management System, integrated with 
    Create a `.env` file in the `backend` folder with the following content:
 
    ```env
-   MONGODB_URI=mongodb+srv://ridaz2401:YOUR_PASSWORD@cluster0.gxrmngb.mongodb.net/?appName=Cluster0
+   MONGODB_URI="..."
    PORT=3000
    FRONTEND_URL=http://localhost:5500
    ```
@@ -278,7 +278,7 @@ Create a `.env` file in the `backend` folder:
 
 ```env
 # MongoDB Atlas Connection String
-MONGODB_URI=mongodb+srv://username:password@cluster0.gxrmngb.mongodb.net/?appName=Cluster0
+MONGODB_URI="..."
 
 # Server Port
 PORT=3000
